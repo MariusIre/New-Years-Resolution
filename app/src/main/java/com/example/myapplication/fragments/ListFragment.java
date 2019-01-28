@@ -14,17 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.myapplication.R;
 import com.example.myapplication.adapters.ResolutionAdapter;
-import com.example.myapplication.helper_classes.TextFileHelper;
-import com.example.myapplication.resolution.Resolution;
+import com.example.myapplication.models.Resolution;
+import com.example.myapplication.persistance.ResolutionPersistance;
+import com.example.myapplication.persistance.file.FileResolutionPersistence;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -33,6 +29,8 @@ import static android.content.Context.MODE_PRIVATE;
  * A simple {@link Fragment} subclass.
  */
 public class ListFragment extends Fragment {
+
+    private ResolutionPersistance rp;
 
     private RecyclerView rvResolutions;
     private RecyclerView.LayoutManager layoutManager;
@@ -47,7 +45,11 @@ public class ListFragment extends Fragment {
     private String description;
 
     public ListFragment() {
-        // Required empty public constructor
+        try {
+            rp = new FileResolutionPersistence(getActivity().openFileOutput("res.txt", MODE_PRIVATE));
+        } catch (FileNotFoundException e) {
+            // TODO: add log
+        }
     }
 
 
@@ -66,14 +68,14 @@ public class ListFragment extends Fragment {
         rvResolutions.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this.getContext());
         rvResolutions.setLayoutManager(layoutManager);
-        adapter = new ResolutionAdapter(this.getActivity(),resolutions);
+        adapter = new ResolutionAdapter(this.getActivity(), resolutions);
         rvResolutions.setAdapter(adapter);
         inflater = getActivity().getLayoutInflater();
 
         fab = view.findViewById(R.id.floatingActionButton);
-        fab.setOnClickListener(t->{
+        fab.setOnClickListener(t -> {
             //Toast.makeText(getActivity(), "Floating button", Toast.LENGTH_SHORT).show();
-            View viewAlertDialog = inflater.inflate(R.layout.alertdialog_layout,null);
+            View viewAlertDialog = inflater.inflate(R.layout.alertdialog_layout, null);
             EditText etTitle = viewAlertDialog.findViewById(R.id.etTitle);
             EditText etDescription = viewAlertDialog.findViewById(R.id.etDescription);
             AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
@@ -85,12 +87,14 @@ public class ListFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             title = etTitle.getText().toString().trim();
                             description = etDescription.getText().toString().trim();
-                            resolutions.add(new Resolution(title,description,"false"));
-                            TextFileHelper.writeToFile(getActivity(),resolutions);
+                            resolutions.add(new Resolution(title, description, "false"));
+
+                            rp.saveAll(resolutions);
+
                             adapter.notifyDataSetChanged();
                         }
                     })
-                    .setNegativeButton("Cancel",null)
+                    .setNegativeButton("Cancel", null)
                     .create();
             alertDialog.show();
 
@@ -103,7 +107,7 @@ public class ListFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    public void setData(ArrayList<Resolution> resolutions){
+    public void setData(ArrayList<Resolution> resolutions) {
         this.resolutions = resolutions;
     }
 

@@ -11,7 +11,7 @@ import android.widget.Button;
 
 import com.example.myapplication.R;
 import com.example.myapplication.helper_classes.FragmentHelper;
-import com.example.myapplication.resolution.Resolution;
+import com.example.myapplication.models.Resolution;
 
 import java.util.ArrayList;
 

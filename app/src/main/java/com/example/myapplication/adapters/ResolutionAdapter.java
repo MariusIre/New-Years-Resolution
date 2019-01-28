@@ -2,7 +2,6 @@ package com.example.myapplication.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.myapplication.R;
-import com.example.myapplication.fragments.ListFragment;
-import com.example.myapplication.resolution.Resolution;
+import com.example.myapplication.models.Resolution;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
